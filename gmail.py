@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+#
+# Chris Holmes
+# chris@holmser.net
+#
+# the purpose of this script is to convert all .tif files sent to pdfconverter@holmser.net
+# and send them back.
+
+
 import email, getpass, imaplib, os, smtplib, subprocess
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
