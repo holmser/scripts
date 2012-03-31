@@ -15,7 +15,7 @@ from email import Encoders
 
 detach_dir = '.'
 user = "pdfconverter@holmser.net"
-pwd = "Elm0andm3"
+pwd = "**********"
 
 class msg_content:
    def __init__(self, filename,address):
