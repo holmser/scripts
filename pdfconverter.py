@@ -11,7 +11,7 @@
 ########################################################################################### 
 
 
-import email, getpass, imaplib, os, smtplib, subprocess
+import email, getpass, imaplib, os, smtplib, subprocess, imghdr
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
 from email.MIMEText import MIMEText
@@ -27,8 +27,9 @@ class config:
       return (self.user.rstrip())
    def print_pwd(self):
       return (self.pwd.rstrip())
+
+
 cred = config()
- 
 detach_dir = '.'
 user = cred.print_user()
 pwd = cred.print_pwd()
@@ -48,14 +49,13 @@ class msg_content:
    
    # Determine if the attachment is a valid tif file (filename)
    def isvalid(self):
-      print(self.filename[-3:-1])
-      if (self.filename[-3:-1] == "tif" or self.filename[-3:-1] == "TIF"):
+      if (imghdr.what(self.filename) == 'tiff'):
          return True
       else:
          return False
    # Delete processed attachments
    def cleanup(self):
-      subprocess.call(["rm "+ self.filename[-3:-1]+"*"], shell=True) 
+      subprocess.call(["rm "+ self.filename[0:-3]+"*"], shell=True) 
 
 def mail(to, subject, text, attach):
    msg = MIMEMultipart()
