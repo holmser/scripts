@@ -22,12 +22,18 @@ class msg_content:
       self.filename = filename
       self.address = address
    def convert(self): 
-      subprocess.call(["convert " +self.filename+ " PDF:"+self.filename.replace('.TIF', '.pdf')], shell=True)
-      #convert .ps to .pdf
-      #subprocess.call(["convert " +self.filename.replace('.TIF', '.ps') + " PDF:" +self.filename.replace('.TIF', '.pdf')], shell=True)
-   #send the mail message
-   
-      mail(self.address,"TIFF to PDF conversion complete",self.filename.replace('.TIF','.pdf')+ " has been attached for your convenience", self.filename.replace('.TIF','.pdf'))
+      subprocess.call(["convert " +self.filename+ " PDF:"+self.filename[0:-3]+"pdf"], shell=True)
+   	  #send the mail message
+      mail(self.address,"TIFF to PDF conversion complete",self.filename[0:-3]+"pdf"+ " has been attached for your convenience", self.filename.replace('.TIF','.pdf'))
+   def reject(self):
+      mail(self.address,"Conversion failed", self.filename+" is not a valid .tif file.  Please check the format and try again.", self.filename)
+   def isvalid(self):
+      print(self.filename[-3:-1])
+      if (self.filename[-3:-1] == "tif" or self.filename[-3:-1] == "TIF"):
+         return True
+      else:
+         return False
+
 def mail(to, subject, text, attach):
    msg = MIMEMultipart()
 
@@ -104,8 +110,11 @@ def get_mail():
                 fp = open(att_path, 'wb')
                 fp.write(part.get_payload(decode=True))
                 fp.close()
-                info = msg_content(filename, email_addy) 
-                info.convert()
+                info  = msg_content(filename, email_addy) 
+                if (info.isvalid() == True):
+                   info.convert()
+                else:
+                   info.reject()
                 #mail("holmser171@gmail.com","Your Converted PDF","Your Converted PDF", "test.pdf")
 
 get_mail()
