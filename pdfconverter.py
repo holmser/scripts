@@ -1,10 +1,14 @@
 #!/usr/bin/env python
 #
+# pdfconverter.py
 # Chris Holmes
 # chris@holmser.net
 #
 # the purpose of this script is to convert all .tif files sent to pdfconverter@holmser.net
-# and send them back.
+# and send them back.  It uses imagemagick for the conversion, and python for the rest.  It
+# is designed to be run as a cron job and run in the background. 
+#
+########################################################################################### 
 
 
 import email, getpass, imaplib, os, smtplib, subprocess
