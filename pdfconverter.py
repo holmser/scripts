@@ -37,18 +37,25 @@ class msg_content:
    def __init__(self, filename,address):
       self.filename = filename
       self.address = address
+   # Convert .tif to .pdf and email it back
    def convert(self): 
       subprocess.call(["convert " +self.filename+ " PDF:"+self.filename[0:-3]+"pdf"], shell=True)
-   	  #send the mail message
+   	  # send the mail message
       mail(self.address,"TIFF to PDF conversion complete",self.filename[0:-3]+"pdf"+ " has been attached for your convenience", self.filename.replace('.TIF','.pdf'))
+   # Send rejection response mail
    def reject(self):
       mail(self.address,"Conversion failed", self.filename+" is not a valid .tif file.  Please check the format and try again.", self.filename)
+   
+   # Determine if the attachment is a valid tif file (filename)
    def isvalid(self):
       print(self.filename[-3:-1])
       if (self.filename[-3:-1] == "tif" or self.filename[-3:-1] == "TIF"):
          return True
       else:
          return False
+   # Delete processed attachments
+   def cleanup(self):
+      subprocess.call(["rm "+ self.filename[-3:-1]+"*"], shell=True) 
 
 def mail(to, subject, text, attach):
    msg = MIMEMultipart()
@@ -83,7 +90,7 @@ def get_mail():
     m.select("INBOX") # here you a can choose a mail box like INBOX instead
     # use m.list() to get all the mailboxes
 
-    resp, items = m.search(None, "ALL") # you could filter using the IMAP rules here (check http://www.example-code.com/csharp/imap-search-critera.asp)
+    resp, items = m.search(None, "UNSEEN") # you could filter using the IMAP rules here (check http://www.example-code.com/csharp/imap-search-critera.asp)
     items = items[0].split() # getting the mails id
 
     for emailid in items:
@@ -131,7 +138,7 @@ def get_mail():
                    info.convert()
                 else:
                    info.reject()
-                #mail("holmser171@gmail.com","Your Converted PDF","Your Converted PDF", "test.pdf")
+                info.cleanup()
 
 get_mail()
 
