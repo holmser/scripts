@@ -13,9 +13,21 @@ from email.MIMEBase import MIMEBase
 from email.MIMEText import MIMEText
 from email import Encoders
 
+class config:
+   def __init__(self):
+      f = open('/home/holmser/.pdfcon', 'r')
+      self.user = f.readline()
+      self.pwd = f.readline()
+   def print_user(self):
+      print(self.user.rstrip())
+      return (self.user.rstrip())
+   def print_pwd(self):
+      return (self.pwd.rstrip())
+cred = config()
+ 
 detach_dir = '.'
-user = "pdfconverter@holmser.net"
-pwd = "**********"
+user = cred.print_user()
+pwd = cred.print_pwd()
 
 class msg_content:
    def __init__(self, filename,address):
