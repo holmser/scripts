@@ -12,14 +12,19 @@
 
 
 import email, getpass, imaplib, os, smtplib, subprocess, imghdr
+import datetime
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
 from email.MIMEText import MIMEText
 from email import Encoders
+path = "home/holmser/.pdfconverter"
+config_file = "pdfconverter.conf"
 
 class config:
-	def __init__(self):
-		f = open('/home/holmser/.pdfcon', 'r')
+	def __init__(self, path, config_file):
+		if not os.path.exists(path):
+			os.makedirs(path)
+		f = open(path+config_file, 'r')
 		self.user = f.readline()
 		self.pwd = f.readline()
 	def print_user(self):
@@ -28,8 +33,22 @@ class config:
 	def print_pwd(self):
 		return (self.pwd.rstrip())
 
-
-cred = config()
+##############################################
+"""
+class action_log:
+	def __init__(self, path)
+		logfile = open(path+pcv.log, 'a')
+		
+	def writelog(email, filename)
+		now = datetime.datetime.now()
+		logfile.write(now.strftime("%Y-%m-%d %H:%M:%S")
+			+ "Conversion successful: " + email + " "+filename)
+	#def failure(email, filename)
+"""
+##############################################
+		
+		
+cred = config(path, config_file)
 detach_dir = '.'
 user = cred.print_user()
 pwd = cred.print_pwd()
@@ -48,8 +67,7 @@ class msg_content:
 		mail(self.address,
 				"TIFF to PDF conversion complete",
 				self.filename[0:-3]+"pdf"+ 
-				" has been attached for your convenience", 
-				self.filename.replace('.TIF','.pdf'))
+				" has been attached for your convenience", self.filename[0:-3]+"pdf")
    # Send rejection response mail
 	def reject(self):
 		mail(self.address,"Conversion failed", self.filename+" is not a valid .tif file.  Please check the format and try again.", self.filename)
