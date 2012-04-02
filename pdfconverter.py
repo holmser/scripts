@@ -17,10 +17,11 @@ from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
 from email.MIMEText import MIMEText
 from email import Encoders
-path = "home/holmser/.pdfconverter"
-config_file = "pdfconverter.conf"
 
-class config:
+path = "/home/holmser/.pdfconverter/"
+config_file = "pdfconverter.conf"
+#############################################
+class Config:
 	def __init__(self, path, config_file):
 		if not os.path.exists(path):
 			os.makedirs(path)
@@ -34,29 +35,34 @@ class config:
 		return (self.pwd.rstrip())
 
 ##############################################
-"""
-class action_log:
-	def __init__(self, path)
-		logfile = open(path+pcv.log, 'a')
+
+class Action_log:
+	def __init__(self):
+		self.logfile = open(path+"pcv.log", 'a')
 		
-	def writelog(email, filename)
+	def write_log(self, email, filename, success):
 		now = datetime.datetime.now()
-		logfile.write(now.strftime("%Y-%m-%d %H:%M:%S")
-			+ "Conversion successful: " + email + " "+filename)
+		if (success):
+			self.logfile.append(now.strftime("%Y-%m-%d %H:%M:%S")
+				+ "Conversion successful: " + email + " "+filename)
+		else: 
+			self.logfile.append(now.strftime("%Y-%m-%d %H:%M:%S") + "FAILURE: "+email+" "+filename)
+
 	#def failure(email, filename)
-"""
+
 ##############################################
 		
 		
-cred = config(path, config_file)
+cred = Config(path, config_file)
 detach_dir = '.'
 user = cred.print_user()
 pwd = cred.print_pwd()
 
-class msg_content:
+class Msg_content:
 	def __init__(self, filename,address):
 		self.filename = filename
 		self.address = address
+		self.log = Action_log()
    # Convert .tif to .pdf and email it back
 	def convert(self): 
 		subprocess.call(["convert " 
@@ -68,10 +74,12 @@ class msg_content:
 				"TIFF to PDF conversion complete",
 				self.filename[0:-3]+"pdf"+ 
 				" has been attached for your convenience", self.filename[0:-3]+"pdf")
+		self.log.write_log(self.filename, self.address, True)
+
    # Send rejection response mail
 	def reject(self):
 		mail(self.address,"Conversion failed", self.filename+" is not a valid .tif file.  Please check the format and try again.", self.filename)
-   
+   		self.log.write_log(self.filename, self.address, False)
    # Determine if the attachment is a valid tif file (filename)
 	def isvalid(self):
 		if (imghdr.what(self.filename) == 'tiff'):
@@ -158,7 +166,7 @@ def get_mail():
 				fp = open(att_path, 'wb')
 				fp.write(part.get_payload(decode=True))
 				fp.close()
-				info  = msg_content(filename, email_addy) 
+				info  = Msg_content(filename, email_addy) 
 				if (info.isvalid() == True):
 					info.convert()
 				else:
