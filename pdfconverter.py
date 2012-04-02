@@ -63,16 +63,20 @@ class Msg_content:
 		self.filename = filename
 		self.address = address
 		self.log = Action_log()
+		if (self.filename.endswith("tiff")):
+			offset = 4
+		elif (self.filename.endswith("tif")):
+			offset = 3
    # Convert .tif to .pdf and email it back
 	def convert(self): 
 		subprocess.call(["convert " 
 			+self.filename+ " PDF:"
-			+self.filename[0:-3]+"pdf"], 
+			+self.filename[0:-offset]+"pdf"], 
 			shell=True)
    	  # send the mail message
 		mail(self.address,
 				"TIFF to PDF conversion complete",
-				self.filename[0:-3]+"pdf"+ 
+				self.filename[0:-offset]+"pdf"+ 
 				" has been attached for your convenience", self.filename[0:-3]+"pdf")
 		self.log.write_log(self.filename, self.address, True)
 
